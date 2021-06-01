@@ -14,6 +14,10 @@ PRO3X_CDU = 2
 def valid_snmp_object(snmp_value):
     return snmp_value!='NOSUCHOBJECT'
 
+def error_exit(message, code=1):
+    print("ERROR: " + message)
+    sys.exit(code)
+
 def main():
     # Define parser and arguments
     parser = argparse.ArgumentParser(description='This script runs SNMPv2c' 
@@ -59,17 +63,15 @@ def main():
                                         community=snmp_community,
                                         timeout=snmp_conn_timeout)
     except easysnmp.exceptions.EasySNMPConnectionError:
-        print("ERROR: Could not establish SNMP connection with the host. Is your"
-            " hostname correct?")
-        sys.exit(1)
+        error_exit('Could not establish SNMP connection with the host. Is your'
+            ' hostname correct?')
 
     # Test SNMP community string
     try:
         snmp_connection.get("sysDescr.0")
     except easysnmp.exceptions.EasySNMPTimeoutError:
-        print("ERROR: Timed out while attempting to communicate with the host. Is"
-            " your SNMP community string correct?")
-        sys.exit(1)
+        error_exit('Timed out while attempting to communicate with the host. Is'
+            ' your SNMP community string correct?')
 
     # Find out what type our CDU is (sentry3, sentry4, or PRO3X)
     #TODO: Give a parser option to supply CDU type manually
@@ -82,8 +84,7 @@ def main():
                                                 + '6.3.2.1.1.1'))):
         servertech_cdu_type = PRO3X_CDU
     else:
-        print("ERROR: Could not identify CDU type automatically.")
-        sys.exit(1)
+        error_exit('Could not identify CDU type automatically.')
 
 if __name__ == "__main__":
     main()
