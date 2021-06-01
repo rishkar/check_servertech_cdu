@@ -72,6 +72,7 @@ def main():
         sys.exit(1)
 
     # Find out what type our CDU is (sentry3, sentry4, or PRO3X)
+    #TODO: Give a parser option to supply CDU type manually
     servertech_cdu_type = None
     if (valid_snmp_object(snmp_connection.get(STECH_SNMP_PRE + '3.1.1.0'))):
         servertech_cdu_type = SENTRY3_CDU
@@ -80,6 +81,9 @@ def main():
     elif (valid_snmp_object(snmp_connection.get(RARITAN_SNMP_PRE 
                                                 + '6.3.2.1.1.1'))):
         servertech_cdu_type = PRO3X_CDU
+    else:
+        print("ERROR: Could not identify CDU type automatically.")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
