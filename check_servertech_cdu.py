@@ -16,30 +16,30 @@ def valid_snmp_object(snmp_value):
 
 def main():
     # Define parser and arguments
-    parser = argparse.ArgumentParser(description='This script runs SNMPv2c checks' 
-                                                ' on any Servertech CDU to verify'
-                                                ' that it is in a good state.'
-                                                ' Currently accepts Servertech'
-                                                ' Sentry3, Sentry4, and PRO3X'
-                                                ' CDUs.')
+    parser = argparse.ArgumentParser(description='This script runs SNMPv2c' 
+                                                ' checks on any Servertech CDU' 
+                                                ' to verify that it is in a'
+                                                ' good state. Currently accepts'
+                                                ' Servertech Sentry3, Sentry4,' 
+                                                ' and PRO3X CDUs.')
     parser.add_argument('-H', '--host', type=str, required=True, 
                         help='The hostname, FQDN or IP of the Servertech CDU')
     parser.add_argument('-c', '--community', default='public', 
-                        help='The (RO) SNMPv2c community string to query the host'
-                            ' with. Defaults to \"public\"')
+                        help='The (RO) SNMPv2c community string to query the'
+                            ' host with. Defaults to \"public\"')
     parser.add_argument('-t', '--temp', type=int, 
-                        help='Returns CRITICAL status if any installed temperature'
-                            ' sensors report a temperature equal to or above this'
-                            ' value. Does nothing if no temperature sensors are'
-                            ' installed.')
+                        help='Returns CRITICAL status if any installed'
+                        ' temperature sensors report a temperature equal to or'
+                        ' above this value. Does nothing if no temperature'
+                        ' sensors are installed.')
     parser.add_argument('--timeout', default=10, type=int, 
-                        help='Amount of time to wait for a response before calling'
-                            ' it quits. Defaults to 10 seconds.')
+                        help='Amount of time to wait for a response before'
+                            ' calling it quits. Defaults to 10 seconds.')
     parser.add_argument('-v', '--verbose', action='store_true', 
                         help='Show detailed status messages')
     parser.add_argument('-d', '--debug', action='store_true',
-                        help='Show VERY detailed status messages. Not for the faint'
-                            ' of heart.')
+                        help='Show VERY detailed status messages. Not for the'
+                            ' faint of heart.')
     args = parser.parse_args()
 
     # Put our args into more easy-on-the-eyes variables
@@ -77,7 +77,8 @@ def main():
         servertech_cdu_type = SENTRY3_CDU
     elif (valid_snmp_object(snmp_connection.get(STECH_SNMP_PRE + '4.1.1.0'))):
         servertech_cdu_type = SENTRY4_CDU
-    elif (valid_snmp_object(snmp_connection.get(RARITAN_SNMP_PRE + '6.3.2.1.1.1'))):
+    elif (valid_snmp_object(snmp_connection.get(RARITAN_SNMP_PRE 
+                                                + '6.3.2.1.1.1'))):
         servertech_cdu_type = PRO3X_CDU
 
 if __name__ == "__main__":
