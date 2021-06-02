@@ -36,6 +36,11 @@ def main():
                         ' temperature sensors report a temperature equal to or'
                         ' above this value. Does nothing if no temperature'
                         ' sensors are installed.')
+    parser.add_argument('--cdutype', choices=['sentry3','sentry4','pro3x'],
+                        help='Manually specify a servertech CDU type. Valid'
+                            ' types are \"sentry3\", \"sentry4\", and'
+                            ' \"pro3x\". If left blank, the CDU type will be'
+                            ' determined automatically.')
     parser.add_argument('--timeout', default=10, type=int, 
                         help='Amount of time to wait for a response before'
                             ' calling it quits. Defaults to 10 seconds.')
@@ -47,6 +52,7 @@ def main():
     args = parser.parse_args()
 
     # Put our args into more easy-on-the-eyes variables
+    servertech_cdu_type = args.cdutype
     snmp_host = args.host
     snmp_community = args.community
     snmp_crit_temp = args.temp
@@ -74,17 +80,17 @@ def main():
             ' your SNMP community string correct?')
 
     # Find out what type our CDU is (sentry3, sentry4, or PRO3X)
-    #TODO: Give a parser option to supply CDU type manually
-    servertech_cdu_type = None
-    if (valid_snmp_object(snmp_connection.get(STECH_SNMP_PRE + '3.1.1.0'))):
-        servertech_cdu_type = SENTRY3_CDU
-    elif (valid_snmp_object(snmp_connection.get(STECH_SNMP_PRE + '4.1.1.0'))):
-        servertech_cdu_type = SENTRY4_CDU
-    elif (valid_snmp_object(snmp_connection.get(RARITAN_SNMP_PRE 
-                                                + '6.3.2.1.1.1'))):
-        servertech_cdu_type = PRO3X_CDU
-    else:
-        error_exit('Could not identify CDU type automatically.')
+    if (servertech_cdu_type is None):
+        if (valid_snmp_object(snmp_connection.get(STECH_SNMP_PRE + '3.1.1.0'))):
+            servertech_cdu_type = SENTRY3_CDU
+        elif (valid_snmp_object(snmp_connection.get(
+                                STECH_SNMP_PRE + '4.1.1.0'))):
+            servertech_cdu_type = SENTRY4_CDU
+        elif (valid_snmp_object(snmp_connection.get(RARITAN_SNMP_PRE 
+                                                    + '6.3.2.1.1.1'))):
+            servertech_cdu_type = PRO3X_CDU
+        else:
+            error_exit('Could not identify CDU type automatically.')
 
 if __name__ == "__main__":
     main()
