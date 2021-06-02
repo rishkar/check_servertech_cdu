@@ -54,7 +54,7 @@ def main():
     be_verbose = args.verbose
     be_debug = args.debug
 
-    # Try to establish a connection with the SNMP host and grab a basic variable.
+    # Try to establish a connection with the SNMP host and grab an OID.
     # If this fails, exit immedeately.
 
     # Test hostname
