@@ -3,6 +3,7 @@
 import argparse
 import easysnmp
 import sys
+import logging
 
 # Define constants
 STECH_SNMP_PRE = "1.3.6.1.4.1.1718."
@@ -13,10 +14,6 @@ PRO3X_CDU = 2
 
 def valid_snmp_object(snmp_value):
     return snmp_value!='NOSUCHOBJECT'
-
-def error_exit(message, code=1):
-    print("ERROR: " + message)
-    sys.exit(code)
 
 def main():
     # Define parser and arguments
@@ -60,6 +57,15 @@ def main():
     be_verbose = args.verbose
     be_debug = args.debug
 
+    # Set logging level
+    if be_debug:
+        LOG_LEVEL='DEBUG'
+    elif be_verbose:
+        LOG_LEVEL='INFO'
+    else:
+        LOG_LEVEL='WARNING'
+    logging.basicConfig(level=LOG_LEVEL)
+
     # Try to establish a connection with the SNMP host and grab an OID.
     # If this fails, exit immedeately.
 
@@ -69,15 +75,17 @@ def main():
                                         community=snmp_community,
                                         timeout=snmp_conn_timeout)
     except easysnmp.exceptions.EasySNMPConnectionError:
-        error_exit('Could not establish SNMP connection with the host. Is your'
-            ' hostname correct?')
+        logging.error('Could not establish SNMP connection with the host. Is'
+                ' your hostname correct?')
+        sys.exit(1)
 
     # Test SNMP community string
     try:
         snmp_connection.get("sysDescr.0")
     except easysnmp.exceptions.EasySNMPTimeoutError:
-        error_exit('Timed out while attempting to communicate with the host. Is'
-            ' your SNMP community string correct?')
+        logging.error('Timed out while attempting to communicate with the host.'
+                ' Is your SNMP community string correct?')
+        sys.exit(1)
 
     # Find out what type our CDU is (sentry3, sentry4, or PRO3X)
     if (servertech_cdu_type is None):
@@ -90,7 +98,11 @@ def main():
                                                     + '6.3.2.1.1.1'))):
             servertech_cdu_type = PRO3X_CDU
         else:
-            error_exit('Could not identify CDU type automatically.')
+            logging.error('Could not identify CDU type automatically. Please'
+                    ' specify this value manually.')
+            sys.exit(1)
+
+    
 
 if __name__ == "__main__":
     main()
