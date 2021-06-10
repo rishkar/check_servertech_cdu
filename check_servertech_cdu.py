@@ -102,7 +102,12 @@ def main():
                     ' specify this value manually.')
             sys.exit(1)
 
+class CDU:
+    def __init__(self, hostname: str):
+        self.hostname = hostname
     
+    def do_temp_check(self):
+        raise NotImplementedError
 
 if __name__ == "__main__":
     main()
